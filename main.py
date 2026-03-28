@@ -17,6 +17,12 @@ from ai_agents.agents.research_agent import ResearchAgent
 from ai_agents.agents.code_agent import CodeAgent
 from ai_agents.agents.writing_agent import WritingAgent
 from ai_agents.agents.analysis_agent import AnalysisAgent
+from ai_agents.agents.commercial_agent import CommercialAgent
+from ai_agents.agents.accounting_agent import AccountingAgent
+from ai_agents.agents.social_media_agent import SocialMediaAgent
+from ai_agents.agents.translator_agent import TranslatorAgent
+from ai_agents.agents.logistics_agent import LogisticsAgent
+from ai_agents.agents.legal_agent import LegalAgent
 
 
 def setup_logging(verbose: bool = False) -> None:
@@ -37,6 +43,12 @@ def create_agent_system(model: str = "claude-sonnet-4-20250514") -> Orchestrator
     orchestrator.add_sub_agent(CodeAgent(model=model))
     orchestrator.add_sub_agent(WritingAgent(model=model))
     orchestrator.add_sub_agent(AnalysisAgent(model=model))
+    orchestrator.add_sub_agent(CommercialAgent(model=model))
+    orchestrator.add_sub_agent(AccountingAgent(model=model))
+    orchestrator.add_sub_agent(SocialMediaAgent(model=model))
+    orchestrator.add_sub_agent(TranslatorAgent(model=model))
+    orchestrator.add_sub_agent(LogisticsAgent(model=model))
+    orchestrator.add_sub_agent(LegalAgent(model=model))
 
     return orchestrator
 

@@ -166,6 +166,12 @@
     .agent-avatar.code { background: linear-gradient(135deg, #1a4a2a, #2a7a3a); }
     .agent-avatar.redaction { background: linear-gradient(135deg, #5a1a4a, #8a2a6a); }
     .agent-avatar.analyse { background: linear-gradient(135deg, #4a3a1a, #7a5a2a); }
+    .agent-avatar.commercial { background: linear-gradient(135deg, #5a2a1a, #8a4a2a); }
+    .agent-avatar.comptable { background: linear-gradient(135deg, #1a4a4a, #2a7a7a); }
+    .agent-avatar.social { background: linear-gradient(135deg, #4a1a5a, #7a2a8a); }
+    .agent-avatar.traducteur { background: linear-gradient(135deg, #1a2a5a, #2a4a8a); }
+    .agent-avatar.logistique { background: linear-gradient(135deg, #3a4a1a, #5a7a2a); }
+    .agent-avatar.juridique { background: linear-gradient(135deg, #4a1a1a, #7a2a2a); }
 
     .agent-name {
       font-size: 15px;
@@ -451,7 +457,7 @@
     <div class="header-logo">AMB</div>
     <div class="header-info">
       <h1>Agents IA – AMB Transports 69</h1>
-      <p>Orchestrateur + 4 agents nommes</p>
+      <p>Orchestrateur + 10 agents specialises</p>
     </div>
     <div class="header-actions">
       <button class="agents-toggle" onclick="toggleAgentsPanel()">Nos Agents</button>
@@ -460,6 +466,12 @@
         <span class="agent-badge" id="badge-kofi">Kofi</span>
         <span class="agent-badge" id="badge-aya">Aya</span>
         <span class="agent-badge" id="badge-sami">Sami</span>
+        <span class="agent-badge" id="badge-fatou">Fatou</span>
+        <span class="agent-badge" id="badge-omar">Omar</span>
+        <span class="agent-badge" id="badge-lina">Lina</span>
+        <span class="agent-badge" id="badge-youssef">Youssef</span>
+        <span class="agent-badge" id="badge-moussa">Moussa</span>
+        <span class="agent-badge" id="badge-amina">Amina</span>
       </div>
     </div>
   </div>
@@ -471,7 +483,7 @@
     <div class="agents-panel" id="agentsPanel">
       <button class="close-panel" onclick="toggleAgentsPanel()">&times;</button>
       <h2>Notre Equipe IA</h2>
-      <p class="subtitle">4 agents specialises qui travaillent ensemble pour vous</p>
+      <p class="subtitle">10 agents specialises qui travaillent ensemble pour vous</p>
 
       <div class="agent-card">
         <div class="agent-card-header">
@@ -541,6 +553,114 @@
           <span class="agent-skill">Strategie</span>
           <span class="agent-skill">Donnees</span>
           <span class="agent-skill">Decisions</span>
+        </div>
+        <div class="agent-status"><span class="status-dot"></span> En ligne</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-avatar commercial">🤝</div>
+          <div>
+            <div class="agent-name">Fatou</div>
+            <div class="agent-title">Commerciale</div>
+          </div>
+        </div>
+        <div class="agent-desc">Experte en prospection et relation client. Elle cree des devis, des argumentaires de vente et des strategies de demarchage.</div>
+        <div class="agent-skills">
+          <span class="agent-skill">Prospection</span>
+          <span class="agent-skill">Devis</span>
+          <span class="agent-skill">Negociation</span>
+          <span class="agent-skill">Suivi client</span>
+        </div>
+        <div class="agent-status"><span class="status-dot"></span> En ligne</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-avatar comptable">💰</div>
+          <div>
+            <div class="agent-name">Omar</div>
+            <div class="agent-title">Comptable</div>
+          </div>
+        </div>
+        <div class="agent-desc">Expert en gestion financiere. Il calcule les marges, cree des factures et analyse la rentabilite de chaque activite.</div>
+        <div class="agent-skills">
+          <span class="agent-skill">Factures</span>
+          <span class="agent-skill">Marges</span>
+          <span class="agent-skill">Budget</span>
+          <span class="agent-skill">Rentabilite</span>
+        </div>
+        <div class="agent-status"><span class="status-dot"></span> En ligne</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-avatar social">📱</div>
+          <div>
+            <div class="agent-name">Lina</div>
+            <div class="agent-title">Social Media</div>
+          </div>
+        </div>
+        <div class="agent-desc">Experte en reseaux sociaux. Elle cree des posts engageants pour Instagram, Facebook, TikTok et LinkedIn.</div>
+        <div class="agent-skills">
+          <span class="agent-skill">Instagram</span>
+          <span class="agent-skill">TikTok</span>
+          <span class="agent-skill">Facebook</span>
+          <span class="agent-skill">LinkedIn</span>
+        </div>
+        <div class="agent-status"><span class="status-dot"></span> En ligne</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-avatar traducteur">🌍</div>
+          <div>
+            <div class="agent-name">Youssef</div>
+            <div class="agent-title">Traducteur</div>
+          </div>
+        </div>
+        <div class="agent-desc">Traducteur trilingue francais/anglais/arabe. Il adapte chaque texte a la culture et au contexte du public cible.</div>
+        <div class="agent-skills">
+          <span class="agent-skill">Francais</span>
+          <span class="agent-skill">Anglais</span>
+          <span class="agent-skill">Arabe</span>
+          <span class="agent-skill">Localisation</span>
+        </div>
+        <div class="agent-status"><span class="status-dot"></span> En ligne</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-avatar logistique">🚛</div>
+          <div>
+            <div class="agent-name">Moussa</div>
+            <div class="agent-title">Logisticien</div>
+          </div>
+        </div>
+        <div class="agent-desc">Expert en logistique et transport routier. Il optimise les tournees, planifie les trajets et gere la flotte de vehicules.</div>
+        <div class="agent-skills">
+          <span class="agent-skill">Trajets</span>
+          <span class="agent-skill">Tournees</span>
+          <span class="agent-skill">Flotte</span>
+          <span class="agent-skill">Couts</span>
+        </div>
+        <div class="agent-status"><span class="status-dot"></span> En ligne</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-avatar juridique">⚖️</div>
+          <div>
+            <div class="agent-name">Amina</div>
+            <div class="agent-title">Juriste</div>
+          </div>
+        </div>
+        <div class="agent-desc">Juriste specialisee en droit des affaires et transport. Elle redige des contrats, analyse les risques et verifie la conformite.</div>
+        <div class="agent-skills">
+          <span class="agent-skill">Contrats</span>
+          <span class="agent-skill">Transport</span>
+          <span class="agent-skill">Conformite</span>
+          <span class="agent-skill">RGPD</span>
         </div>
         <div class="agent-status"><span class="status-dot"></span> En ligne</div>
       </div>
@@ -640,7 +760,19 @@
         'Aya': 'badge-aya',
         'dact': 'badge-aya',
         'Sami': 'badge-sami',
-        'Analyste': 'badge-sami'
+        'Analyste': 'badge-sami',
+        'Fatou': 'badge-fatou',
+        'Commercial': 'badge-fatou',
+        'Omar': 'badge-omar',
+        'Comptable': 'badge-omar',
+        'Lina': 'badge-lina',
+        'Social': 'badge-lina',
+        'Youssef': 'badge-youssef',
+        'Traduct': 'badge-youssef',
+        'Moussa': 'badge-moussa',
+        'Logisti': 'badge-moussa',
+        'Amina': 'badge-amina',
+        'Juriste': 'badge-amina'
       };
       for (const [key, id] of Object.entries(badges)) {
         if (name && name.includes(key)) {
