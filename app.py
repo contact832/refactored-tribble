@@ -38,6 +38,9 @@ def create_flask_app() -> Flask:
     from ai_agents.integrations.whatsapp import create_whatsapp_blueprint
     app.register_blueprint(create_whatsapp_blueprint(orchestrator))
 
+    from ai_agents.integrations.stripe_payments import create_stripe_blueprint
+    app.register_blueprint(create_stripe_blueprint())
+
     @app.route("/")
     def index():
         return {
@@ -46,6 +49,9 @@ def create_flask_app() -> Flask:
                 "POST /api/task": "Envoyer une tache aux agents",
                 "GET /api/status": "Statut des agents",
                 "POST /whatsapp/webhook": "Webhook WhatsApp (Twilio)",
+                "GET /shop": "Boutique Les Jardins D'Arabie",
+                "POST /shop/create-checkout-session": "Creer une session de paiement Stripe",
+                "POST /shop/webhook": "Webhook Stripe",
             },
             "telegram": "Active" if os.environ.get("TELEGRAM_BOT_TOKEN") else "Non configure",
         }
