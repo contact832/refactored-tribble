@@ -23,6 +23,7 @@ from ai_agents.agents.social_media_agent import SocialMediaAgent
 from ai_agents.agents.translator_agent import TranslatorAgent
 from ai_agents.agents.logistics_agent import LogisticsAgent
 from ai_agents.agents.legal_agent import LegalAgent
+from ai_agents.company_profile import get_agent_company_prompt
 
 
 def setup_logging(verbose: bool = False) -> None:
@@ -50,7 +51,24 @@ def create_agent_system(model: str = "claude-sonnet-4-20250514") -> Orchestrator
     orchestrator.add_sub_agent(LogisticsAgent(model=model))
     orchestrator.add_sub_agent(LegalAgent(model=model))
 
+    # Charger les infos AMB Transports 69 dans chaque agent
+    _load_company_knowledge(orchestrator)
+
     return orchestrator
+
+
+def _load_company_knowledge(orchestrator: OrchestratorAgent) -> None:
+    """Charge la base de connaissances AMB Transports 69 dans tous les agents."""
+    company_prompt = get_agent_company_prompt("")
+
+    # Injecter dans le system prompt de chaque sous-agent
+    for name, agent in orchestrator.sub_agents.items():
+        agent.system_prompt = agent.system_prompt + "\n\n" + company_prompt
+        logging.info("[Memoire] %s connait AMB Transports 69", name)
+
+    # L'orchestrateur aussi
+    orchestrator._company_context = company_prompt
+    logging.info("[Memoire] Base de connaissances AMB Transports 69 chargee pour %d agents", len(orchestrator.sub_agents))
 
 
 def interactive_mode(orchestrator: OrchestratorAgent) -> None:
