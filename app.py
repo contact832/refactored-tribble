@@ -81,7 +81,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="AI Agents Server")
     parser.add_argument("--telegram", action="store_true", help="Lancer le bot Telegram uniquement")
     parser.add_argument("--all", action="store_true", help="Lancer REST API + Telegram")
-    parser.add_argument("--port", type=int, default=int(os.environ.get("PORT", 5000)))
+    parser.add_argument("--port", type=int, default=int(os.environ.get("PORT", 8080)))
     args = parser.parse_args()
 
     if args.telegram:
