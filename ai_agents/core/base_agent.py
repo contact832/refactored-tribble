@@ -29,6 +29,7 @@ class BaseAgent(ABC):
         self.system_prompt = system_prompt or f"Tu es {name}, un agent IA spécialisé en {role}."
         self.client = Anthropic()
         self.conversation_history: list[dict[str, str]] = []
+        self.max_history = 40  # 20 echanges (user+assistant) gardes en memoire
         self.sub_agents: dict[str, BaseAgent] = {}
         self._message_log: list[Message] = []
 
@@ -66,7 +67,7 @@ class BaseAgent(ABC):
         self._message_log.append(result)
         return result
 
-    def call_llm(self, prompt: str, use_history: bool = False) -> str:
+    def call_llm(self, prompt: str, use_history: bool = True) -> str:
         """Appelle Claude API avec le prompt donné."""
         messages = []
         if use_history:
@@ -91,6 +92,9 @@ class BaseAgent(ABC):
         if use_history:
             self.conversation_history.append({"role": "user", "content": prompt})
             self.conversation_history.append({"role": "assistant", "content": assistant_reply})
+            # Garder seulement les derniers echanges pour eviter trop de tokens
+            if len(self.conversation_history) > self.max_history:
+                self.conversation_history = self.conversation_history[-self.max_history:]
 
         return assistant_reply
 

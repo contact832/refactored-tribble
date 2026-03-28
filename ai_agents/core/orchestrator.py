@@ -66,7 +66,8 @@ class OrchestratorAgent(BaseAgent):
         self.system_prompt = self._build_system_prompt()
 
         plan_response = self.call_llm(
-            f"Tâche à réaliser : {task}\n\nContexte supplémentaire : {json.dumps(context, ensure_ascii=False)}"
+            f"Tâche à réaliser : {task}\n\nContexte supplémentaire : {json.dumps(context, ensure_ascii=False)}",
+            use_history=False,
         )
 
         try:

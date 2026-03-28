@@ -27,4 +27,22 @@ def create_api_blueprint(orchestrator: OrchestratorAgent) -> Blueprint:
     def get_status():
         return jsonify(orchestrator.get_status())
 
+    @api.route("/memory", methods=["GET"])
+    def get_memory():
+        """Voir la memoire de chaque agent."""
+        memory = {}
+        for name, agent in orchestrator.sub_agents.items():
+            memory[name] = {
+                "messages": len(agent.conversation_history),
+                "history": agent.conversation_history[-4:],  # 2 derniers echanges
+            }
+        return jsonify(memory)
+
+    @api.route("/memory/clear", methods=["POST"])
+    def clear_memory():
+        """Vider la memoire de tous les agents."""
+        for agent in orchestrator.sub_agents.values():
+            agent.conversation_history.clear()
+        return jsonify({"status": "Memoire videe pour tous les agents"})
+
     return api
