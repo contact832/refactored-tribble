@@ -90,11 +90,11 @@ class OrchestratorAgent(BaseAgent):
 
         results = []
         for step in plan.get("plan", []):
-            agent_name = step["agent"]
+            agent_name = self._resolve_agent_name(step["agent"])
             sub_task = step["task"]
             sub_context = step.get("context", {})
 
-            logger.info(f"[Orchestrateur] Étape: {agent_name} -> {sub_task[:60]}...")
+            logger.info("[Orchestrateur] Etape: %s -> %s...", agent_name, sub_task[:60])
             result = self.delegate(agent_name, sub_task, sub_context)
             results.append({
                 "agent": agent_name,
@@ -115,6 +115,32 @@ class OrchestratorAgent(BaseAgent):
             "metadata": {"plan": plan, "results": results},
         }
 
+    def _resolve_agent_name(self, name: str) -> str:
+        """Résout le nom d'un agent même si le LLM retourne un nom approximatif."""
+        # Correspondance exacte
+        if name in self.sub_agents:
+            return name
+
+        # Correspondance insensible à la casse
+        name_lower = name.lower().strip()
+        for registered_name in self.sub_agents:
+            if registered_name.lower() == name_lower:
+                return registered_name
+
+        # Correspondance partielle (ex: "Fatou" trouve "Fatou – Commerciale")
+        for registered_name in self.sub_agents:
+            if name_lower in registered_name.lower() or registered_name.lower() in name_lower:
+                return registered_name
+
+        # Correspondance par prénom ou rôle
+        for registered_name in self.sub_agents:
+            parts = registered_name.replace("–", " ").replace("-", " ").split()
+            for part in parts:
+                if part.lower() == name_lower:
+                    return registered_name
+
+        return name  # Retourne tel quel, delegate() gérera l'erreur
+
     def _synthesize(self, original_task: str, results: list[dict]) -> str:
         """Synthétise les résultats des sous-agents en une réponse cohérente."""
         results_text = "\n\n".join(
@@ -131,7 +157,7 @@ class OrchestratorAgent(BaseAgent):
 
     def run(self, task: str, context: dict[str, Any] | None = None) -> str:
         """Point d'entrée principal pour exécuter une tâche."""
-        logger.info(f"[Orchestrateur] Nouvelle tâche: {task[:80]}...")
+        logger.info("[Orchestrateur] Nouvelle tache: %s...", task[:80])
         msg = Message(
             type=MessageType.TASK,
             content=task,

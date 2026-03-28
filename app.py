@@ -19,6 +19,13 @@ import argparse
 import logging
 import multiprocessing
 import os
+import sys
+
+# Forcer l'encodage UTF-8 pour éviter les erreurs avec les caractères français
+if sys.stdout and hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+if sys.stderr and hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 
 from flask import Flask, send_from_directory
 
@@ -31,6 +38,7 @@ def create_flask_app() -> Flask:
 
     app = Flask(__name__)
     app.config["orchestrator"] = orchestrator
+    app.json.ensure_ascii = False
 
     from ai_agents.integrations.rest_api import create_api_blueprint
     app.register_blueprint(create_api_blueprint(orchestrator))

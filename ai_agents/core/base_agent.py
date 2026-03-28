@@ -35,7 +35,7 @@ class BaseAgent(ABC):
     def add_sub_agent(self, agent: BaseAgent) -> None:
         """Ajoute un sous-agent à cet agent."""
         self.sub_agents[agent.name] = agent
-        logger.info(f"[{self.name}] Sous-agent ajouté : {agent.name} ({agent.role})")
+        logger.info("[%s] Sous-agent ajoute : %s (%s)", self.name, agent.name, agent.role)
 
     def remove_sub_agent(self, name: str) -> None:
         """Retire un sous-agent."""
@@ -61,7 +61,7 @@ class BaseAgent(ABC):
         self._message_log.append(msg)
 
         sub_agent = self.sub_agents[agent_name]
-        logger.info(f"[{self.name}] Délégation à {agent_name}: {task[:80]}...")
+        logger.info("[%s] Delegation a %s: %s...", self.name, agent_name, task[:80])
         result = sub_agent.handle_message(msg)
         self._message_log.append(result)
         return result
@@ -90,7 +90,7 @@ class BaseAgent(ABC):
 
     def handle_message(self, message: Message) -> Message:
         """Traite un message entrant et retourne une réponse."""
-        logger.info(f"[{self.name}] Message reçu de {message.sender}: {message.content[:80]}...")
+        logger.info("[%s] Message recu de %s: %s...", self.name, message.sender, message.content[:80])
         try:
             result = self.process(message.content, message.data)
             return message.reply(
@@ -99,7 +99,7 @@ class BaseAgent(ABC):
                 msg_type=MessageType.RESULT,
             )
         except Exception as e:
-            logger.error(f"[{self.name}] Erreur: {e}")
+            logger.error("[%s] Erreur: %s", self.name, e)
             return message.reply(
                 content=f"Erreur dans {self.name}: {str(e)}",
                 msg_type=MessageType.ERROR,
