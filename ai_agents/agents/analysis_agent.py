@@ -12,7 +12,7 @@ class AnalysisAgent(BaseAgent):
 
     def __init__(self, model: str = "claude-sonnet-4-20250514"):
         super().__init__(
-            name="Analyste",
+            name="Sami – Analyste",
             role="analyse de données, raisonnement logique, résolution de problèmes et prise de décision",
             model=model,
             system_prompt=(

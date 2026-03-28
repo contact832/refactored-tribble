@@ -53,8 +53,32 @@
       color: #999;
     }
 
-    .header-agents {
+    .header-actions {
       margin-left: auto;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .agents-toggle {
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 8px 16px;
+      font-size: 13px;
+      color: #d4721a;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .agents-toggle:hover {
+      background: #2a1a0a;
+      border-color: #d4721a;
+    }
+
+    .header-agents {
       display: flex;
       gap: 8px;
     }
@@ -73,7 +97,134 @@
       color: #d4721a;
     }
 
+    /* MAIN LAYOUT */
+    .main-wrapper {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* AGENTS PANEL */
+    .agents-panel {
+      width: 340px;
+      background: #141414;
+      border-right: 1px solid #2a2a2a;
+      overflow-y: auto;
+      padding: 24px;
+      display: none;
+      flex-shrink: 0;
+    }
+
+    .agents-panel.visible {
+      display: block;
+    }
+
+    .agents-panel h2 {
+      font-size: 16px;
+      color: #d4721a;
+      margin-bottom: 6px;
+    }
+
+    .agents-panel .subtitle {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .agent-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 14px;
+      transition: all 0.2s;
+    }
+
+    .agent-card:hover {
+      border-color: #444;
+    }
+
+    .agent-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .agent-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .agent-avatar.recherche { background: linear-gradient(135deg, #1a3a5c, #2a5a8c); }
+    .agent-avatar.code { background: linear-gradient(135deg, #1a4a2a, #2a7a3a); }
+    .agent-avatar.redaction { background: linear-gradient(135deg, #5a1a4a, #8a2a6a); }
+    .agent-avatar.analyse { background: linear-gradient(135deg, #4a3a1a, #7a5a2a); }
+
+    .agent-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .agent-title {
+      font-size: 11px;
+      color: #888;
+      margin-top: 2px;
+    }
+
+    .agent-desc {
+      font-size: 13px;
+      color: #aaa;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .agent-skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .agent-skill {
+      background: #0f0f0f;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 3px 10px;
+      font-size: 11px;
+      color: #888;
+    }
+
+    .agent-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 12px;
+      font-size: 11px;
+      color: #666;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #2a7a3a;
+    }
+
     /* CHAT AREA */
+    .chat-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
     .chat-container {
       flex: 1;
       overflow-y: auto;
@@ -253,10 +404,43 @@
     }
 
     /* RESPONSIVE */
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
       .header-agents { display: none; }
       .message { max-width: 90%; }
       .suggestions { flex-direction: column; }
+      .agents-panel {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 100;
+        border-right: none;
+      }
+      .agents-panel .close-panel {
+        display: block;
+      }
+    }
+
+    @media (min-width: 769px) {
+      .agents-panel .close-panel {
+        display: none;
+      }
+    }
+
+    .close-panel {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: #333;
+      border: none;
+      color: #aaa;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+      display: none;
     }
   </style>
 </head>
@@ -267,40 +451,128 @@
     <div class="header-logo">AMB</div>
     <div class="header-info">
       <h1>Agents IA – AMB Transports 69</h1>
-      <p>Orchestrateur + 4 sous-agents</p>
+      <p>Orchestrateur + 4 agents nommes</p>
     </div>
-    <div class="header-agents">
-      <span class="agent-badge" id="badge-chercheur">Chercheur</span>
-      <span class="agent-badge" id="badge-developpeur">Developpeur</span>
-      <span class="agent-badge" id="badge-redacteur">Redacteur</span>
-      <span class="agent-badge" id="badge-analyste">Analyste</span>
+    <div class="header-actions">
+      <button class="agents-toggle" onclick="toggleAgentsPanel()">Nos Agents</button>
+      <div class="header-agents">
+        <span class="agent-badge" id="badge-mariam">Mariam</span>
+        <span class="agent-badge" id="badge-kofi">Kofi</span>
+        <span class="agent-badge" id="badge-aya">Aya</span>
+        <span class="agent-badge" id="badge-sami">Sami</span>
+      </div>
     </div>
   </div>
 
-  <!-- CHAT -->
-  <div class="chat-container" id="chat">
-    <div class="welcome" id="welcome">
-      <h2>Bienvenue, Dennis</h2>
-      <p>Posez une question et les agents IA s'en occupent.</p>
-      <div class="suggestions">
-        <div class="suggestion" onclick="sendSuggestion(this)">Analyse le marche du transport routier a Lyon</div>
-        <div class="suggestion" onclick="sendSuggestion(this)">Redige un email pour demarcher de nouveaux clients</div>
-        <div class="suggestion" onclick="sendSuggestion(this)">Cree une strategie de vente pour mes dattes</div>
-        <div class="suggestion" onclick="sendSuggestion(this)">Calcule la rentabilite d'un trajet Lyon-Paris</div>
+  <!-- MAIN -->
+  <div class="main-wrapper">
+
+    <!-- AGENTS PANEL -->
+    <div class="agents-panel" id="agentsPanel">
+      <button class="close-panel" onclick="toggleAgentsPanel()">&times;</button>
+      <h2>Notre Equipe IA</h2>
+      <p class="subtitle">4 agents specialises qui travaillent ensemble pour vous</p>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-avatar recherche">🔍</div>
+          <div>
+            <div class="agent-name">Mariam</div>
+            <div class="agent-title">Chercheuse</div>
+          </div>
+        </div>
+        <div class="agent-desc">Experte en recherche et synthese d'informations. Elle analyse les sujets en profondeur et fournit des rapports structures et fiables.</div>
+        <div class="agent-skills">
+          <span class="agent-skill">Recherche</span>
+          <span class="agent-skill">Synthese</span>
+          <span class="agent-skill">Veille</span>
+          <span class="agent-skill">Sources</span>
+        </div>
+        <div class="agent-status"><span class="status-dot"></span> En ligne</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-avatar code">💻</div>
+          <div>
+            <div class="agent-name">Kofi</div>
+            <div class="agent-title">Developpeur</div>
+          </div>
+        </div>
+        <div class="agent-desc">Developpeur senior qui genere, analyse et corrige du code. Il maitrise les bonnes pratiques et les design patterns.</div>
+        <div class="agent-skills">
+          <span class="agent-skill">Code</span>
+          <span class="agent-skill">Debug</span>
+          <span class="agent-skill">Refactoring</span>
+          <span class="agent-skill">Review</span>
+        </div>
+        <div class="agent-status"><span class="status-dot"></span> En ligne</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-avatar redaction">✍️</div>
+          <div>
+            <div class="agent-name">Aya</div>
+            <div class="agent-title">Redactrice</div>
+          </div>
+        </div>
+        <div class="agent-desc">Redactrice professionnelle qui maitrise tous les styles : marketing, technique, journalistique. Elle adapte chaque texte au public cible.</div>
+        <div class="agent-skills">
+          <span class="agent-skill">Redaction</span>
+          <span class="agent-skill">Copywriting</span>
+          <span class="agent-skill">Emails</span>
+          <span class="agent-skill">Marketing</span>
+        </div>
+        <div class="agent-status"><span class="status-dot"></span> En ligne</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-avatar analyse">📊</div>
+          <div>
+            <div class="agent-name">Sami</div>
+            <div class="agent-title">Analyste</div>
+          </div>
+        </div>
+        <div class="agent-desc">Expert en analyse de donnees et strategie. Il utilise des frameworks reconnus (SWOT, PESTEL) et fournit des recommandations actionnables.</div>
+        <div class="agent-skills">
+          <span class="agent-skill">Analyse</span>
+          <span class="agent-skill">Strategie</span>
+          <span class="agent-skill">Donnees</span>
+          <span class="agent-skill">Decisions</span>
+        </div>
+        <div class="agent-status"><span class="status-dot"></span> En ligne</div>
       </div>
     </div>
 
-    <div class="typing" id="typing">
-      <span></span><span></span><span></span>
-    </div>
-  </div>
+    <!-- CHAT -->
+    <div class="chat-wrapper">
+      <div class="chat-container" id="chat">
+        <div class="welcome" id="welcome">
+          <h2>Bienvenue, Dennis</h2>
+          <p>Posez une question et nos agents IA s'en occupent.</p>
+          <div class="suggestions">
+            <div class="suggestion" onclick="sendSuggestion(this)">Analyse le marche du transport routier a Lyon</div>
+            <div class="suggestion" onclick="sendSuggestion(this)">Redige un email pour demarcher de nouveaux clients</div>
+            <div class="suggestion" onclick="sendSuggestion(this)">Cree une strategie de vente pour mes dattes</div>
+            <div class="suggestion" onclick="sendSuggestion(this)">Calcule la rentabilite d'un trajet Lyon-Paris</div>
+          </div>
+        </div>
 
-  <!-- INPUT -->
-  <div class="input-bar">
-    <textarea id="input" rows="1" placeholder="Ecrivez votre message..." onkeydown="handleKey(event)"></textarea>
-    <button class="send-btn" id="sendBtn" onclick="sendMessage()">
-      <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-    </button>
+        <div class="typing" id="typing">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+
+      <!-- INPUT -->
+      <div class="input-bar">
+        <textarea id="input" rows="1" placeholder="Ecrivez votre message..." onkeydown="handleKey(event)"></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -310,6 +582,7 @@
     const typing = document.getElementById('typing');
     const welcome = document.getElementById('welcome');
     const sendBtn = document.getElementById('sendBtn');
+    const agentsPanel = document.getElementById('agentsPanel');
     let isLoading = false;
 
     // Auto-resize textarea
@@ -323,6 +596,10 @@
         e.preventDefault();
         sendMessage();
       }
+    }
+
+    function toggleAgentsPanel() {
+      agentsPanel.classList.toggle('visible');
     }
 
     function sendSuggestion(el) {
@@ -347,7 +624,6 @@
     }
 
     function formatText(text) {
-      // Basic markdown-like formatting
       return text
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/`(.*?)`/g, '<code style="background:#2a2a2a;padding:2px 6px;border-radius:4px;font-size:13px;">$1</code>')
@@ -357,12 +633,15 @@
     function highlightAgent(name) {
       document.querySelectorAll('.agent-badge').forEach(b => b.classList.remove('active'));
       const badges = {
-        'Chercheur': 'badge-chercheur',
-        'Developpeur': 'badge-developpeur',
-        'Redacteur': 'badge-redacteur',
-        'Analyste': 'badge-analyste'
+        'Mariam': 'badge-mariam',
+        'Cherch': 'badge-mariam',
+        'Kofi': 'badge-kofi',
+        'veloppeur': 'badge-kofi',
+        'Aya': 'badge-aya',
+        'dact': 'badge-aya',
+        'Sami': 'badge-sami',
+        'Analyste': 'badge-sami'
       };
-      // Highlight matching badges
       for (const [key, id] of Object.entries(badges)) {
         if (name && name.includes(key)) {
           document.getElementById(id)?.classList.add('active');
@@ -394,7 +673,6 @@
         typing.classList.remove('visible');
 
         if (data.response) {
-          // Detect which agent responded
           const agentMatch = data.response.match(/\*\*\[(.*?)\]\*\*/);
           const agentName = agentMatch ? agentMatch[1] : 'Orchestrateur';
           highlightAgent(agentName);

@@ -12,7 +12,7 @@ class ResearchAgent(BaseAgent):
 
     def __init__(self, model: str = "claude-sonnet-4-20250514"):
         super().__init__(
-            name="Chercheur",
+            name="Mariam – Chercheuse",
             role="recherche, analyse d'informations et synthèse de connaissances",
             model=model,
             system_prompt=(

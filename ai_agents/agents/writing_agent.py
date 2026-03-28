@@ -12,7 +12,7 @@ class WritingAgent(BaseAgent):
 
     def __init__(self, model: str = "claude-sonnet-4-20250514"):
         super().__init__(
-            name="Rédacteur",
+            name="Aya – Rédactrice",
             role="rédaction de contenu, copywriting, documentation et communication",
             model=model,
             system_prompt=(

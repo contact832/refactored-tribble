@@ -12,7 +12,7 @@ class CodeAgent(BaseAgent):
 
     def __init__(self, model: str = "claude-sonnet-4-20250514"):
         super().__init__(
-            name="Développeur",
+            name="Kofi – Développeur",
             role="génération de code, débogage, refactoring et revue de code",
             model=model,
             system_prompt=(
