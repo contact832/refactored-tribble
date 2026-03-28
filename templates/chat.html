@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMB Transports 69 – Agents IA</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0f0f0f;
+      color: #e8e8e8;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    .header {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2a1a0a 100%);
+      border-bottom: 1px solid #333;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .header-logo {
+      width: 44px;
+      height: 44px;
+      background: #d4721a;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+      color: white;
+    }
+
+    .header-info h1 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .header-info p {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .header-agents {
+      margin-left: auto;
+      display: flex;
+      gap: 8px;
+    }
+
+    .agent-badge {
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 11px;
+      color: #aaa;
+    }
+
+    .agent-badge.active {
+      border-color: #d4721a;
+      color: #d4721a;
+    }
+
+    /* CHAT AREA */
+    .chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .message {
+      max-width: 75%;
+      padding: 14px 18px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background: #d4721a;
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .message.assistant {
+      align-self: flex-start;
+      background: #1e1e1e;
+      border: 1px solid #2a2a2a;
+      color: #e0e0e0;
+      border-bottom-left-radius: 4px;
+    }
+
+    .message.assistant .agent-tag {
+      display: inline-block;
+      background: #d4721a22;
+      color: #d4721a;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .typing {
+      align-self: flex-start;
+      padding: 14px 18px;
+      background: #1e1e1e;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      border-bottom-left-radius: 4px;
+      display: none;
+    }
+
+    .typing.visible { display: flex; gap: 4px; align-items: center; }
+
+    .typing span {
+      width: 8px;
+      height: 8px;
+      background: #d4721a;
+      border-radius: 50%;
+      animation: bounce 1.4s infinite;
+    }
+
+    .typing span:nth-child(2) { animation-delay: 0.2s; }
+    .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-6px); opacity: 1; }
+    }
+
+    /* WELCOME */
+    .welcome {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+    }
+
+    .welcome h2 {
+      font-size: 22px;
+      color: #d4721a;
+      margin-bottom: 12px;
+    }
+
+    .welcome p {
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .suggestion {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 13px;
+      color: #ccc;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .suggestion:hover {
+      border-color: #d4721a;
+      color: #d4721a;
+      background: #1e1208;
+    }
+
+    /* INPUT BAR */
+    .input-bar {
+      border-top: 1px solid #2a2a2a;
+      background: #1a1a1a;
+      padding: 16px 24px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+      flex-shrink: 0;
+    }
+
+    .input-bar textarea {
+      flex: 1;
+      background: #0f0f0f;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: #e8e8e8;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      resize: none;
+      max-height: 120px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-bar textarea:focus {
+      border-color: #d4721a;
+    }
+
+    .input-bar textarea::placeholder {
+      color: #555;
+    }
+
+    .send-btn {
+      width: 44px;
+      height: 44px;
+      background: #d4721a;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .send-btn:hover { background: #e8832a; }
+
+    .send-btn:disabled {
+      background: #333;
+      cursor: not-allowed;
+    }
+
+    .send-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      .header-agents { display: none; }
+      .message { max-width: 90%; }
+      .suggestions { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-logo">AMB</div>
+    <div class="header-info">
+      <h1>Agents IA – AMB Transports 69</h1>
+      <p>Orchestrateur + 4 sous-agents</p>
+    </div>
+    <div class="header-agents">
+      <span class="agent-badge" id="badge-chercheur">Chercheur</span>
+      <span class="agent-badge" id="badge-developpeur">Developpeur</span>
+      <span class="agent-badge" id="badge-redacteur">Redacteur</span>
+      <span class="agent-badge" id="badge-analyste">Analyste</span>
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="chat-container" id="chat">
+    <div class="welcome" id="welcome">
+      <h2>Bienvenue, Dennis</h2>
+      <p>Posez une question et les agents IA s'en occupent.</p>
+      <div class="suggestions">
+        <div class="suggestion" onclick="sendSuggestion(this)">Analyse le marche du transport routier a Lyon</div>
+        <div class="suggestion" onclick="sendSuggestion(this)">Redige un email pour demarcher de nouveaux clients</div>
+        <div class="suggestion" onclick="sendSuggestion(this)">Cree une strategie de vente pour mes dattes</div>
+        <div class="suggestion" onclick="sendSuggestion(this)">Calcule la rentabilite d'un trajet Lyon-Paris</div>
+      </div>
+    </div>
+
+    <div class="typing" id="typing">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <!-- INPUT -->
+  <div class="input-bar">
+    <textarea id="input" rows="1" placeholder="Ecrivez votre message..." onkeydown="handleKey(event)"></textarea>
+    <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+      <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  </div>
+
+  <script>
+    const API_URL = window.location.origin + '/api/task';
+    const chat = document.getElementById('chat');
+    const input = document.getElementById('input');
+    const typing = document.getElementById('typing');
+    const welcome = document.getElementById('welcome');
+    const sendBtn = document.getElementById('sendBtn');
+    let isLoading = false;
+
+    // Auto-resize textarea
+    input.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+
+    function handleKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    }
+
+    function sendSuggestion(el) {
+      input.value = el.textContent;
+      sendMessage();
+    }
+
+    function addMessage(text, role, agentName) {
+      if (welcome) welcome.style.display = 'none';
+
+      const msg = document.createElement('div');
+      msg.className = `message ${role}`;
+
+      if (role === 'assistant' && agentName) {
+        msg.innerHTML = `<span class="agent-tag">${agentName}</span><br>${formatText(text)}`;
+      } else {
+        msg.textContent = text;
+      }
+
+      chat.insertBefore(msg, typing);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function formatText(text) {
+      // Basic markdown-like formatting
+      return text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/`(.*?)`/g, '<code style="background:#2a2a2a;padding:2px 6px;border-radius:4px;font-size:13px;">$1</code>')
+        .replace(/\n/g, '<br>');
+    }
+
+    function highlightAgent(name) {
+      document.querySelectorAll('.agent-badge').forEach(b => b.classList.remove('active'));
+      const badges = {
+        'Chercheur': 'badge-chercheur',
+        'Developpeur': 'badge-developpeur',
+        'Redacteur': 'badge-redacteur',
+        'Analyste': 'badge-analyste'
+      };
+      // Highlight matching badges
+      for (const [key, id] of Object.entries(badges)) {
+        if (name && name.includes(key)) {
+          document.getElementById(id)?.classList.add('active');
+        }
+      }
+    }
+
+    async function sendMessage() {
+      const text = input.value.trim();
+      if (!text || isLoading) return;
+
+      isLoading = true;
+      sendBtn.disabled = true;
+      addMessage(text, 'user');
+      input.value = '';
+      input.style.height = 'auto';
+
+      typing.classList.add('visible');
+      chat.scrollTop = chat.scrollHeight;
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ task: text })
+        });
+
+        const data = await res.json();
+        typing.classList.remove('visible');
+
+        if (data.response) {
+          // Detect which agent responded
+          const agentMatch = data.response.match(/\*\*\[(.*?)\]\*\*/);
+          const agentName = agentMatch ? agentMatch[1] : 'Orchestrateur';
+          highlightAgent(agentName);
+          addMessage(data.response, 'assistant', agentName);
+        } else if (data.error) {
+          addMessage('Erreur : ' + data.error, 'assistant', 'Systeme');
+        }
+      } catch (err) {
+        typing.classList.remove('visible');
+        addMessage('Impossible de contacter le serveur. Verifiez que app.py tourne.', 'assistant', 'Systeme');
+      }
+
+      isLoading = false;
+      sendBtn.disabled = false;
+      input.focus();
+    }
+  </script>
+</body>
+</html>

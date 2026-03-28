@@ -20,7 +20,7 @@ import logging
 import multiprocessing
 import os
 
-from flask import Flask
+from flask import Flask, send_from_directory
 
 from main import create_agent_system
 
@@ -40,6 +40,10 @@ def create_flask_app() -> Flask:
 
     @app.route("/")
     def index():
+        return send_from_directory("templates", "chat.html")
+
+    @app.route("/api/info")
+    def info():
         return {
             "service": "AI Agents System",
             "endpoints": {
