@@ -781,16 +781,17 @@
       }
     }
 
+    let activeRequests = 0;
+
     async function sendMessage() {
       const text = input.value.trim();
-      if (!text || isLoading) return;
+      if (!text) return;
 
-      isLoading = true;
-      sendBtn.disabled = true;
       addMessage(text, 'user');
       input.value = '';
       input.style.height = 'auto';
 
+      activeRequests++;
       typing.classList.add('visible');
       chat.scrollTop = chat.scrollHeight;
 
@@ -802,23 +803,29 @@
         });
 
         const data = await res.json();
-        typing.classList.remove('visible');
 
         if (data.response) {
-          const agentMatch = data.response.match(/\*\*\[(.*?)\]\*\*/);
-          const agentName = agentMatch ? agentMatch[1] : 'Orchestrateur';
-          highlightAgent(agentName);
-          addMessage(data.response, 'assistant', agentName);
+          // Message d'erreur cle API plus clair
+          if (data.response.includes('Cle API invalide') || data.response.includes('ascii')) {
+            addMessage("⚠️ La cle API n'est pas valide. Dans le Terminal, tapez :\nexport ANTHROPIC_API_KEY=\"sk-ant-api03-VOTRE-VRAIE-CLE\"\npuis relancez avec : python3 app.py", 'assistant', 'Systeme');
+          } else {
+            const agentMatch = data.response.match(/\*\*\[(.*?)\]\*\*/);
+            const agentName = agentMatch ? agentMatch[1] : 'Orchestrateur';
+            highlightAgent(agentName);
+            addMessage(data.response, 'assistant', agentName);
+          }
         } else if (data.error) {
           addMessage('Erreur : ' + data.error, 'assistant', 'Systeme');
         }
       } catch (err) {
-        typing.classList.remove('visible');
         addMessage('Impossible de contacter le serveur. Verifiez que app.py tourne.', 'assistant', 'Systeme');
       }
 
-      isLoading = false;
-      sendBtn.disabled = false;
+      activeRequests--;
+      if (activeRequests <= 0) {
+        activeRequests = 0;
+        typing.classList.remove('visible');
+      }
       input.focus();
     }
   </script>

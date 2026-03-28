@@ -73,12 +73,18 @@ class BaseAgent(ABC):
             messages.extend(self.conversation_history)
         messages.append({"role": "user", "content": prompt})
 
-        response = self.client.messages.create(
-            model=self.model,
-            max_tokens=4096,
-            system=self.system_prompt,
-            messages=messages,
-        )
+        try:
+            response = self.client.messages.create(
+                model=self.model,
+                max_tokens=4096,
+                system=self.system_prompt,
+                messages=messages,
+            )
+        except UnicodeEncodeError:
+            raise RuntimeError(
+                "Cle API invalide (caracteres speciaux detectes). "
+                "Verifiez votre ANTHROPIC_API_KEY — elle doit commencer par 'sk-ant-api03-...'"
+            )
 
         assistant_reply = response.content[0].text
 
