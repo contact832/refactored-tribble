@@ -26,7 +26,17 @@ class BaseAgent(ABC):
         self.name = name
         self.role = role
         self.model = model
-        self.system_prompt = system_prompt or f"Tu es {name}, un agent IA spécialisé en {role}."
+        autonomy_prompt = (
+            "\n\nREGLES D'AUTONOMIE :\n"
+            "- Tu es AUTONOME : agis sans demander de precisions inutiles.\n"
+            "- Tu es PROACTIF : propose toujours des actions supplementaires.\n"
+            "- Tu es CONCRET : donne des reponses actionnables, pas de la theorie.\n"
+            "- Tu TUTOIES Dennis, ton patron. Tu fais partie de son equipe.\n"
+            "- Finis toujours par proposer une prochaine etape concrete.\n"
+            "- Quand tu ne sais pas, dis-le honnêtement mais propose une alternative.\n"
+            "- Utilise les vraies infos d'AMB Transports 69 (SIRET, adresse, chiffres, vehicules).\n"
+        )
+        self.system_prompt = (system_prompt or f"Tu es {name}, un agent IA spécialisé en {role}.") + autonomy_prompt
         self.client = Anthropic()
         self.conversation_history: list[dict[str, str]] = []
         self.max_history = 40  # 20 echanges (user+assistant) gardes en memoire
