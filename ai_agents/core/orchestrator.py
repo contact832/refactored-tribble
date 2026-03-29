@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 
 from ai_agents.core.base_agent import BaseAgent
@@ -89,20 +90,30 @@ class OrchestratorAgent(BaseAgent):
                 "metadata": {"plan": plan},
             }
 
-        results = []
-        for step in plan.get("plan", []):
+        steps = plan.get("plan", [])
+        results = [None] * len(steps)
+
+        def _run_step(index, step):
             agent_name = self._resolve_agent_name(step["agent"])
             sub_task = step["task"]
             sub_context = step.get("context", {})
-
-            logger.info("[Orchestrateur] Etape: %s -> %s...", agent_name, sub_task[:60])
+            logger.info("[Orchestrateur] Etape parallele %d: %s -> %s...", index + 1, agent_name, sub_task[:60])
             result = self.delegate(agent_name, sub_task, sub_context)
-            results.append({
+            return index, {
                 "agent": agent_name,
                 "task": sub_task,
                 "result": result.content,
                 "status": result.type.value,
-            })
+            }
+
+        # Lancer tous les agents en parallele
+        with ThreadPoolExecutor(max_workers=len(steps) or 1) as executor:
+            futures = [executor.submit(_run_step, i, step) for i, step in enumerate(steps)]
+            for future in as_completed(futures):
+                idx, res = future.result()
+                results[idx] = res
+
+        results = [r for r in results if r is not None]
 
         if plan.get("synthesis_needed") and results:
             synthesis = self._synthesize(task, results)
