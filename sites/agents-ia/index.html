@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMB Transports 69 – Agents IA</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0f0f0f;
+      color: #e8e8e8;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    .header {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2a1a0a 100%);
+      border-bottom: 1px solid #333;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .header-logo {
+      width: 44px;
+      height: 44px;
+      background: #d4721a;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+      color: white;
+    }
+
+    .header-info h1 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .header-info p {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .header-actions {
+      margin-left: auto;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .agents-toggle {
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 8px 16px;
+      font-size: 13px;
+      color: #d4721a;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .agents-toggle:hover {
+      background: #2a1a0a;
+      border-color: #d4721a;
+    }
+
+    .header-agents {
+      display: flex;
+      gap: 8px;
+    }
+
+    .agent-badge {
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 11px;
+      color: #aaa;
+    }
+
+    .agent-badge.active {
+      border-color: #d4721a;
+      color: #d4721a;
+    }
+
+    /* MAIN LAYOUT */
+    .main-wrapper {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* AGENTS PANEL */
+    .agents-panel {
+      width: 340px;
+      background: #141414;
+      border-right: 1px solid #2a2a2a;
+      overflow-y: auto;
+      padding: 24px;
+      display: none;
+      flex-shrink: 0;
+    }
+
+    .agents-panel.visible {
+      display: block;
+    }
+
+    .agents-panel h2 {
+      font-size: 16px;
+      color: #d4721a;
+      margin-bottom: 6px;
+    }
+
+    .agents-panel .subtitle {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .agent-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 14px;
+      transition: all 0.2s;
+    }
+
+    .agent-card:hover {
+      border-color: #444;
+    }
+
+    .agent-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .agent-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .agent-avatar.recherche { background: linear-gradient(135deg, #1a3a5c, #2a5a8c); }
+    .agent-avatar.code { background: linear-gradient(135deg, #1a4a2a, #2a7a3a); }
+    .agent-avatar.redaction { background: linear-gradient(135deg, #5a1a4a, #8a2a6a); }
+    .agent-avatar.analyse { background: linear-gradient(135deg, #4a3a1a, #7a5a2a); }
+    .agent-avatar.commercial { background: linear-gradient(135deg, #5a2a1a, #8a4a2a); }
+    .agent-avatar.comptable { background: linear-gradient(135deg, #1a4a4a, #2a7a7a); }
+    .agent-avatar.social { background: linear-gradient(135deg, #4a1a5a, #7a2a8a); }
+    .agent-avatar.traducteur { background: linear-gradient(135deg, #1a2a5a, #2a4a8a); }
+    .agent-avatar.logistique { background: linear-gradient(135deg, #3a4a1a, #5a7a2a); }
+    .agent-avatar.juridique { background: linear-gradient(135deg, #4a1a1a, #7a2a2a); }
+
+    .agent-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .agent-title {
+      font-size: 11px;
+      color: #888;
+      margin-top: 2px;
+    }
+
+    .agent-desc {
+      font-size: 13px;
+      color: #aaa;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .agent-skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .agent-skill {
+      background: #0f0f0f;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 3px 10px;
+      font-size: 11px;
+      color: #888;
+    }
+
+    .agent-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 12px;
+      font-size: 11px;
+      color: #666;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #2a7a3a;
+    }
+
+    /* CHAT AREA */
+    .chat-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .message {
+      max-width: 75%;
+      padding: 14px 18px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background: #d4721a;
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .message.assistant {
+      align-self: flex-start;
+      background: #1e1e1e;
+      border: 1px solid #2a2a2a;
+      color: #e0e0e0;
+      border-bottom-left-radius: 4px;
+    }
+
+    .message.assistant .agent-tag {
+      display: inline-block;
+      background: #d4721a22;
+      color: #d4721a;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .typing {
+      align-self: flex-start;
+      padding: 14px 18px;
+      background: #1e1e1e;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      border-bottom-left-radius: 4px;
+      display: none;
+    }
+
+    .typing.visible { display: flex; gap: 4px; align-items: center; }
+
+    .typing span {
+      width: 8px;
+      height: 8px;
+      background: #d4721a;
+      border-radius: 50%;
+      animation: bounce 1.4s infinite;
+    }
+
+    .typing span:nth-child(2) { animation-delay: 0.2s; }
+    .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-6px); opacity: 1; }
+    }
+
+    /* WELCOME */
+    .welcome {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+    }
+
+    .welcome h2 {
+      font-size: 22px;
+      color: #d4721a;
+      margin-bottom: 12px;
+    }
+
+    .welcome p {
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .suggestion {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 13px;
+      color: #ccc;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .suggestion:hover {
+      border-color: #d4721a;
+      color: #d4721a;
+      background: #1e1208;
+    }
+
+    /* INPUT BAR */
+    .input-bar {
+      border-top: 1px solid #2a2a2a;
+      background: #1a1a1a;
+      padding: 16px 24px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+      flex-shrink: 0;
+    }
+
+    .input-bar textarea {
+      flex: 1;
+      background: #0f0f0f;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: #e8e8e8;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      resize: none;
+      max-height: 120px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-bar textarea:focus {
+      border-color: #d4721a;
+    }
+
+    .input-bar textarea::placeholder {
+      color: #555;
+    }
+
+    .send-btn {
+      width: 44px;
+      height: 44px;
+      background: #d4721a;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .send-btn:hover { background: #e8832a; }
+
+    .send-btn:disabled {
+      background: #333;
+      cursor: not-allowed;
+    }
+
+    .send-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .header-agents { display: none; }
+      .message { max-width: 90%; }
+      .suggestions { flex-direction: column; }
+      .agents-panel {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 100;
+        border-right: none;
+      }
+      .agents-panel .close-panel {
+        display: block;
+      }
+    }
+
+    @media (min-width: 769px) {
+      .agents-panel .close-panel {
+        display: none;
+      }
+    }
+
+    .close-panel {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: #333;
+      border: none;
+      color: #aaa;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-logo">AMB</div>
+    <div class="header-info">
+      <h1>Agents IA – AMB Transports 69</h1>
+      <p>Orchestrateur + 10 agents specialises</p>
+    </div>
+    <div class="header-actions">
+      <button class="agents-toggle" onclick="toggleAgentsPanel()">Nos Agents</button>
+      <div class="header-agents">
+        <span class="agent-badge" id="badge-mariam">Mariam</span>
+        <span class="agent-badge" id="badge-kofi">Kofi</span>
+        <span class="agent-badge" id="badge-aya">Aya</span>
+        <span class="agent-badge" id="badge-sami">Sami</span>
+        <span class="agent-badge" id="badge-fatou">Fatou</span>
+        <span class="agent-badge" id="badge-omar">Omar</span>
+        <span class="agent-badge" id="badge-lina">Lina</span>
+        <span class="agent-badge" id="badge-youssef">Youssef</span>
+        <span class="agent-badge" id="badge-moussa">Moussa</span>
+        <span class="agent-badge" id="badge-amina">Amina</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main-wrapper">
+
+    <!-- AGENTS PANEL -->
+    <div class="agents-panel" id="agentsPanel">
+      <button class="close-panel" onclick="toggleAgentsPanel()">&times;</button>
+      <h2>Notre Equipe IA</h2>
+      <p class="subtitle">10 agents specialises qui travaillent ensemble pour vous</p>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-avatar recherche">🔍</div>
+          <div>
+            <div class="agent-name">Mariam</div>
+            <div class="agent-title">Chercheuse</div>
+          </div>
+        </div>
+        <div class="agent-desc">Experte en recherche et synthese d'informations. Elle analyse les sujets en profondeur et fournit des rapports structures et fiables.</div>
+        <div class="agent-skills">
+          <span class="agent-skill">Recherche</span>
+          <span class="agent-skill">Synthese</span>
+          <span class="agent-skill">Veille</span>
+          <span class="agent-skill">Sources</span>
+        </div>
+        <div class="agent-status"><span class="status-dot"></span> En ligne</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-avatar code">💻</div>
+          <div>
+            <div class="agent-name">Kofi</div>
+            <div class="agent-title">Developpeur</div>
+          </div>
+        </div>
+        <div class="agent-desc">Developpeur senior qui genere, analyse et corrige du code. Il maitrise les bonnes pratiques et les design patterns.</div>
+        <div class="agent-skills">
+          <span class="agent-skill">Code</span>
+          <span class="agent-skill">Debug</span>
+          <span class="agent-skill">Refactoring</span>
+          <span class="agent-skill">Review</span>
+        </div>
+        <div class="agent-status"><span class="status-dot"></span> En ligne</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-avatar redaction">✍️</div>
+          <div>
+            <div class="agent-name">Aya</div>
+            <div class="agent-title">Redactrice</div>
+          </div>
+        </div>
+        <div class="agent-desc">Redactrice professionnelle qui maitrise tous les styles : marketing, technique, journalistique. Elle adapte chaque texte au public cible.</div>
+        <div class="agent-skills">
+          <span class="agent-skill">Redaction</span>
+          <span class="agent-skill">Copywriting</span>
+          <span class="agent-skill">Emails</span>
+          <span class="agent-skill">Marketing</span>
+        </div>
+        <div class="agent-status"><span class="status-dot"></span> En ligne</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-avatar analyse">📊</div>
+          <div>
+            <div class="agent-name">Sami</div>
+            <div class="agent-title">Analyste</div>
+          </div>
+        </div>
+        <div class="agent-desc">Expert en analyse de donnees et strategie. Il utilise des frameworks reconnus (SWOT, PESTEL) et fournit des recommandations actionnables.</div>
+        <div class="agent-skills">
+          <span class="agent-skill">Analyse</span>
+          <span class="agent-skill">Strategie</span>
+          <span class="agent-skill">Donnees</span>
+          <span class="agent-skill">Decisions</span>
+        </div>
+        <div class="agent-status"><span class="status-dot"></span> En ligne</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-avatar commercial">🤝</div>
+          <div>
+            <div class="agent-name">Fatou</div>
+            <div class="agent-title">Commerciale</div>
+          </div>
+        </div>
+        <div class="agent-desc">Experte en prospection et relation client. Elle cree des devis, des argumentaires de vente et des strategies de demarchage.</div>
+        <div class="agent-skills">
+          <span class="agent-skill">Prospection</span>
+          <span class="agent-skill">Devis</span>
+          <span class="agent-skill">Negociation</span>
+          <span class="agent-skill">Suivi client</span>
+        </div>
+        <div class="agent-status"><span class="status-dot"></span> En ligne</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-avatar comptable">💰</div>
+          <div>
+            <div class="agent-name">Omar</div>
+            <div class="agent-title">Comptable</div>
+          </div>
+        </div>
+        <div class="agent-desc">Expert en gestion financiere. Il calcule les marges, cree des factures et analyse la rentabilite de chaque activite.</div>
+        <div class="agent-skills">
+          <span class="agent-skill">Factures</span>
+          <span class="agent-skill">Marges</span>
+          <span class="agent-skill">Budget</span>
+          <span class="agent-skill">Rentabilite</span>
+        </div>
+        <div class="agent-status"><span class="status-dot"></span> En ligne</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-avatar social">📱</div>
+          <div>
+            <div class="agent-name">Lina</div>
+            <div class="agent-title">Social Media</div>
+          </div>
+        </div>
+        <div class="agent-desc">Experte en reseaux sociaux. Elle cree des posts engageants pour Instagram, Facebook, TikTok et LinkedIn.</div>
+        <div class="agent-skills">
+          <span class="agent-skill">Instagram</span>
+          <span class="agent-skill">TikTok</span>
+          <span class="agent-skill">Facebook</span>
+          <span class="agent-skill">LinkedIn</span>
+        </div>
+        <div class="agent-status"><span class="status-dot"></span> En ligne</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-avatar traducteur">🌍</div>
+          <div>
+            <div class="agent-name">Youssef</div>
+            <div class="agent-title">Traducteur</div>
+          </div>
+        </div>
+        <div class="agent-desc">Traducteur trilingue francais/anglais/arabe. Il adapte chaque texte a la culture et au contexte du public cible.</div>
+        <div class="agent-skills">
+          <span class="agent-skill">Francais</span>
+          <span class="agent-skill">Anglais</span>
+          <span class="agent-skill">Arabe</span>
+          <span class="agent-skill">Localisation</span>
+        </div>
+        <div class="agent-status"><span class="status-dot"></span> En ligne</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-avatar logistique">🚛</div>
+          <div>
+            <div class="agent-name">Moussa</div>
+            <div class="agent-title">Logisticien</div>
+          </div>
+        </div>
+        <div class="agent-desc">Expert en logistique et transport routier. Il optimise les tournees, planifie les trajets et gere la flotte de vehicules.</div>
+        <div class="agent-skills">
+          <span class="agent-skill">Trajets</span>
+          <span class="agent-skill">Tournees</span>
+          <span class="agent-skill">Flotte</span>
+          <span class="agent-skill">Couts</span>
+        </div>
+        <div class="agent-status"><span class="status-dot"></span> En ligne</div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-avatar juridique">⚖️</div>
+          <div>
+            <div class="agent-name">Amina</div>
+            <div class="agent-title">Juriste</div>
+          </div>
+        </div>
+        <div class="agent-desc">Juriste specialisee en droit des affaires et transport. Elle redige des contrats, analyse les risques et verifie la conformite.</div>
+        <div class="agent-skills">
+          <span class="agent-skill">Contrats</span>
+          <span class="agent-skill">Transport</span>
+          <span class="agent-skill">Conformite</span>
+          <span class="agent-skill">RGPD</span>
+        </div>
+        <div class="agent-status"><span class="status-dot"></span> En ligne</div>
+      </div>
+    </div>
+
+    <!-- CHAT -->
+    <div class="chat-wrapper">
+      <div class="chat-container" id="chat">
+        <div class="welcome" id="welcome">
+          <h2>Bienvenue, Dennis</h2>
+          <p>Posez une question et nos agents IA s'en occupent.</p>
+          <div class="suggestions">
+            <div class="suggestion" onclick="sendSuggestion(this)">Analyse le marche du transport routier a Lyon</div>
+            <div class="suggestion" onclick="sendSuggestion(this)">Redige un email pour demarcher de nouveaux clients</div>
+            <div class="suggestion" onclick="sendSuggestion(this)">Cree une strategie de vente pour mes dattes</div>
+            <div class="suggestion" onclick="sendSuggestion(this)">Calcule la rentabilite d'un trajet Lyon-Paris</div>
+          </div>
+        </div>
+
+        <div class="typing" id="typing">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+
+      <!-- INPUT -->
+      <div class="input-bar">
+        <textarea id="input" rows="1" placeholder="Ecrivez votre message..." onkeydown="handleKey(event)"></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = window.location.origin + '/api/task';
+    const chat = document.getElementById('chat');
+    const input = document.getElementById('input');
+    const typing = document.getElementById('typing');
+    const welcome = document.getElementById('welcome');
+    const sendBtn = document.getElementById('sendBtn');
+    const agentsPanel = document.getElementById('agentsPanel');
+    let isLoading = false;
+
+    // Auto-resize textarea
+    input.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+
+    function handleKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    }
+
+    function toggleAgentsPanel() {
+      agentsPanel.classList.toggle('visible');
+    }
+
+    function sendSuggestion(el) {
+      input.value = el.textContent;
+      sendMessage();
+    }
+
+    function addMessage(text, role, agentName) {
+      if (welcome) welcome.style.display = 'none';
+
+      const msg = document.createElement('div');
+      msg.className = `message ${role}`;
+
+      if (role === 'assistant' && agentName) {
+        msg.innerHTML = `<span class="agent-tag">${agentName}</span><br>${formatText(text)}`;
+      } else {
+        msg.textContent = text;
+      }
+
+      chat.insertBefore(msg, typing);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function formatText(text) {
+      return text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/`(.*?)`/g, '<code style="background:#2a2a2a;padding:2px 6px;border-radius:4px;font-size:13px;">$1</code>')
+        .replace(/\n/g, '<br>');
+    }
+
+    function highlightAgent(name) {
+      document.querySelectorAll('.agent-badge').forEach(b => b.classList.remove('active'));
+      const badges = {
+        'Mariam': 'badge-mariam',
+        'Cherch': 'badge-mariam',
+        'Kofi': 'badge-kofi',
+        'veloppeur': 'badge-kofi',
+        'Aya': 'badge-aya',
+        'dact': 'badge-aya',
+        'Sami': 'badge-sami',
+        'Analyste': 'badge-sami',
+        'Fatou': 'badge-fatou',
+        'Commercial': 'badge-fatou',
+        'Omar': 'badge-omar',
+        'Comptable': 'badge-omar',
+        'Lina': 'badge-lina',
+        'Social': 'badge-lina',
+        'Youssef': 'badge-youssef',
+        'Traduct': 'badge-youssef',
+        'Moussa': 'badge-moussa',
+        'Logisti': 'badge-moussa',
+        'Amina': 'badge-amina',
+        'Juriste': 'badge-amina'
+      };
+      for (const [key, id] of Object.entries(badges)) {
+        if (name && name.includes(key)) {
+          document.getElementById(id)?.classList.add('active');
+        }
+      }
+    }
+
+    let activeRequests = 0;
+
+    async function sendMessage() {
+      const text = input.value.trim();
+      if (!text) return;
+
+      addMessage(text, 'user');
+      input.value = '';
+      input.style.height = 'auto';
+
+      activeRequests++;
+      typing.classList.add('visible');
+      chat.scrollTop = chat.scrollHeight;
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ task: text })
+        });
+
+        const data = await res.json();
+
+        if (data.response) {
+          // Message d'erreur cle API plus clair
+          if (data.response.includes('Cle API invalide') || data.response.includes('ascii')) {
+            addMessage("⚠️ La cle API n'est pas valide. Dans le Terminal, tapez :\nexport ANTHROPIC_API_KEY=\"sk-ant-api03-VOTRE-VRAIE-CLE\"\npuis relancez avec : python3 app.py", 'assistant', 'Systeme');
+          } else {
+            const agentMatch = data.response.match(/\*\*\[(.*?)\]\*\*/);
+            const agentName = agentMatch ? agentMatch[1] : 'Orchestrateur';
+            highlightAgent(agentName);
+            addMessage(data.response, 'assistant', agentName);
+          }
+        } else if (data.error) {
+          addMessage('Erreur : ' + data.error, 'assistant', 'Systeme');
+        }
+      } catch (err) {
+        addMessage('Impossible de contacter le serveur. Verifiez que app.py tourne.', 'assistant', 'Systeme');
+      }
+
+      activeRequests--;
+      if (activeRequests <= 0) {
+        activeRequests = 0;
+        typing.classList.remove('visible');
+      }
+      input.focus();
+    }
+  </script>
+</body>
+</html>
